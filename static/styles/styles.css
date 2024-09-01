@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    height: 100vh; /* Full viewport height */
+}
+
+.container-fluid {
+    text-align: center; /* Center text inside the container */
+    width: 100%;
+    max-width: 800px; /* Adjust the maximum width */
+}
+
+.container-fluid img {
+    width: 100%;
+    height: auto;
+}
