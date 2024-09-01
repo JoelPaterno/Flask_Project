@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy # type: ignore
 
 app = Flask(__name__)
 app.secret_key = "hello"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://users.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.permanent_session_lifetime = timedelta(days=5)
 
@@ -30,6 +30,15 @@ def login():
         session.permanent = True
         user = request.form["nm"]
         session["user"] = user
+
+        found_user = users.query.filter_by(name=user).first()
+        if found_user:
+            session["email"] = found_user.email
+        else:
+            usr = users(user, "")
+            db.session.add(usr)
+            db.session.commit()
+
         flash(f"Login Sucessful, welcome {user}!")
         return redirect(url_for("user"))
     else:
@@ -47,6 +56,11 @@ def user():
         if request.method == "POST":
             email = request.form["email"]
             session["email"] = email
+
+            found_user = users.query.filter_by(name=user).first()
+            found_user.email = email
+            db.session.commit()
+
             flash("Email saved")
         else:
             if "email" in session:
@@ -65,6 +79,8 @@ def logout():
     session.pop("email", None)
     return redirect(url_for("login"))
 
-if  __name__ == "__main__":
+with app.app_context():
     db.create_all()
+
+if  __name__ == "__main__":
     app.run(debug=True)
