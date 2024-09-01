@@ -79,6 +79,10 @@ def logout():
     session.pop("email", None)
     return redirect(url_for("login"))
 
+@app.route("/view")
+def view():
+    return render_template("view.html", values=users.query.all())
+
 with app.app_context():
     db.create_all()
 
